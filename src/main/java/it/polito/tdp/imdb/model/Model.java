@@ -20,6 +20,8 @@ public class Model {
 	Graph<Director, DefaultWeightedEdge> grafo;
 	Map<Integer, Director> idMap;
 	List<Director> soluzioneMigliore;
+	int pesoParziale =0;
+	int somma =0;
 	
 	public Model() {
 		dao = new ImdbDAO();
@@ -82,7 +84,7 @@ public class Model {
 
 	private void cerca(int numMax, List<Director> parziale, Director partenza) {
 	//	int max = 0;
-		int pesoParziale =0;
+		
 		// caso terminale: ho raggiunto numMax
 		if(this.soluzioneMigliore == null) {
 			soluzioneMigliore = new ArrayList<>(parziale);
@@ -96,17 +98,26 @@ public class Model {
 		
 		for(DefaultWeightedEdge e : this.grafo.edgesOf(partenza)) {
 			Director nuovaPartenza = Graphs.getOppositeVertex(this.grafo, e, partenza);
-			pesoParziale =this.calcolaPeso(e);
+			
+			if(this.pesoParziale == 0) {
+				this.pesoParziale = (int) this.grafo.getEdgeWeight(e);
+			}
+			
 			if(pesoParziale<=numMax) {
 				if(!parziale.contains(nuovaPartenza)) {
 					parziale.add(nuovaPartenza);
+					pesoParziale =this.calcolaPeso(e);
 					cerca(numMax, parziale, nuovaPartenza);
+					
+					//int daTogliere = (int) this.grafo.getEdgeWeight(e);
+					//pesoParziale = this.calcolaPeso(e) - daTogliere;
+					this.backtrackingPeso(e);
 					parziale.remove(nuovaPartenza);
 				}
 		}
 		}
 	}
-	int somma =0;
+	
 	public int calcolaPeso(DefaultWeightedEdge e) {
 		
 		int peso = (int) this.grafo.getEdgeWeight(e);
@@ -116,6 +127,13 @@ public class Model {
 		return somma;
 	}
 	
+	
+	public int backtrackingPeso(DefaultWeightedEdge e) {
+		int peso = (int) this.grafo.getEdgeWeight(e);
+		somma -= peso;
+		return somma;
+		
+	}
 		
 	}
 
