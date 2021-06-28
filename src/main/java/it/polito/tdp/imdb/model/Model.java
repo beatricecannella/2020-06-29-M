@@ -20,7 +20,7 @@ public class Model {
 	Graph<Director, DefaultWeightedEdge> grafo;
 	Map<Integer, Director> idMap;
 	List<Director> soluzioneMigliore;
-	int pesoParziale =0;
+
 	int somma =0;
 	
 	public Model() {
@@ -98,43 +98,49 @@ public class Model {
 		
 		for(DefaultWeightedEdge e : this.grafo.edgesOf(partenza)) {
 			Director nuovaPartenza = Graphs.getOppositeVertex(this.grafo, e, partenza);
-			
-			if(this.pesoParziale == 0) {
-				this.pesoParziale = (int) this.grafo.getEdgeWeight(e);
+			int pesoParziale =0;
+			if(pesoParziale == 0) {
+				pesoParziale = (int) this.grafo.getEdgeWeight(e);
 			}
 			
 			if(pesoParziale<=numMax) {
 				if(!parziale.contains(nuovaPartenza)) {
 					parziale.add(nuovaPartenza);
-					pesoParziale =this.calcolaPeso(e);
+					pesoParziale =this.calcolaPeso(parziale);
 					cerca(numMax, parziale, nuovaPartenza);
 					
 					//int daTogliere = (int) this.grafo.getEdgeWeight(e);
 					//pesoParziale = this.calcolaPeso(e) - daTogliere;
-					this.backtrackingPeso(e);
+					this.backtrackingPeso(parziale);
 					parziale.remove(nuovaPartenza);
 				}
 		}
 		}
 	}
 	
-	public int calcolaPeso(DefaultWeightedEdge e) {
+	public int calcolaPeso(List<Director> parziale) {
 		
-		int peso = (int) this.grafo.getEdgeWeight(e);
-		somma += peso;
+		for(Director d: parziale) {
+			for(DefaultWeightedEdge e : this.grafo.edgesOf(d)) {
+				somma += (int) grafo.getEdgeWeight(e);
+			}
+			
+		}
+		
 		
 		
 		return somma;
 	}
 	
 	
-	public int backtrackingPeso(DefaultWeightedEdge e) {
-		int peso = (int) this.grafo.getEdgeWeight(e);
-		somma -= peso;
-		return somma;
+	public void backtrackingPeso(List<Director> parziale) {
+		for(Director d: parziale) {
+			for(DefaultWeightedEdge e : this.grafo.edgesOf(d)) {
+				somma -= (int) grafo.getEdgeWeight(e);
+		
 		
 	}
 		
 	}
-
-
+}
+	}
